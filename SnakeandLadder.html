@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">  
+    <title></title>
+    <style media="screen">
+      canvas{
+        border: 1px solid grey;
+        background: lightgrey;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game-canvas" width="0" height="0"></canvas>
+    <script type="text/javascript">
+      (function () {
+          
+function CreateFaceOfSnake(ctx, StartPoint, changeDirectionCurv, SnakeColor, SnakeEyeColor) {
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.arc(points2[StartPoint][0], points2[StartPoint][1], 7, 0, 2 * Math.PI, false);
+    ctx.fillStyle = SnakeColor;
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = SnakeEyeColor;
+    if (changeDirectionCurv) {
+        ctx.fillRect(points2[StartPoint][0] - 4, points2[StartPoint][1] - 2, 4, 4);
+        ctx.fillRect(points2[StartPoint][0], points2[StartPoint][1] + 1, 4, 4);
+
+    } else {
+        ctx.fillRect(points2[StartPoint][0] - 4, points2[StartPoint][1] + 1, 4, 4);
+        ctx.fillRect(points2[StartPoint][0], points2[StartPoint][1] - 2, 4, 4);
+
+    }
+}
+
+function FillMidAndLastPointSnake(ctx, midpoint, SnakeColor) {
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.arc(points2[midpoint][0], points2[midpoint][1], 1.9, 0, 2 * Math.PI, false);
+    ctx.fillStyle = SnakeColor;
+    ctx.fill();
+    ctx.stroke();
+
+}
+
+function ChageSubMiddilePoint(SubmiddlePoint1, changeDirectionCurv, LengthofSnake) {
+    if (changeDirectionCurv == 0) {
+        SubmiddlePoint1++;
+        if (SubmiddlePoint1 % 10 == 0) {
+            SubmiddlePoint1--;
+        }
+        if (LengthofSnake > 5) {
+            SubmiddlePoint1++;
+            if (SubmiddlePoint1 % 10 == 0) {
+                SubmiddlePoint1--;
+            }
+        }
+    } else {
+        SubmiddlePoint1--;
+        if (SubmiddlePoint1 % 10 == 9) {
+            SubmiddlePoint1++;
+        }
+        if (LengthofSnake > 5) {
+            SubmiddlePoint1--;
+            if (SubmiddlePoint1 % 10 == 9) {
+                SubmiddlePoint1++;
+            }
+        }
+    }
+    return SubmiddlePoint1;
+
+}
+
+function SnakeMake(ctx, StartPoint, EndPoint, changeDirectionCurv11, SnakeColor = "#01FEEF") { // it will create snake
+    ctx.beginPath();
+    if(AddSnakeReDrawData ==false){
+        SnakeDataBase.push([Point1ConnectPoint2[StartPoint], Point1ConnectPoint2[EndPoint]]); // it will store position of snake for redaraw canvas  
+        var Datass = [StartPoint,EndPoint,changeDirectionCurv11,SnakeColor];
+        SnakeReDrawData.push(Datass);
+    }
+    
+    ctx.lineWidth = 7;
+    //var SnakeColor = "#00b3a0";
+    var SnakeEyeColor = "#000000";
+    ctx.strokeStyle = SnakeColor; //"#00FFFF";
+    var LengthofSnake = ((EndPoint / 10) - (StartPoint / 10));
+    LengthofSnake = LengthofSnake.toFixed(0)
+    var changeDirectionCurv = changeDirectionCurv11; //Math.floor((Math.random() * 2) + 0); //0 or 1
+    if (LengthofSnake > 2) {
+        var middlePoint = (((EndPoint / 10) + (StartPoint / 10)) / 2).toFixed(0) + (((EndPoint % 10) + (StartPoint % 10)) / 2).toFixed(0);
+        var SubmiddlePoint1 = ((((middlePoint / 10) + (StartPoint / 10))) / 2).toFixed(0) + ((((middlePoint % 10) + (StartPoint % 10))) / 2).toFixed(0);
+        var SubmiddlePoint2 = ((((EndPoint / 10) + (middlePoint / 10))) / 2).toFixed(0) + ((((middlePoint % 10) + (EndPoint % 10))) / 2).toFixed(0);
+        SubmiddlePoint1 = ChageSubMiddilePoint(SubmiddlePoint1, changeDirectionCurv, LengthofSnake);
+        ctx.moveTo(points2[StartPoint][0], points2[StartPoint][1]);
+        ctx.quadraticCurveTo(points2[SubmiddlePoint1][0], points2[SubmiddlePoint1][1], points2[middlePoint][0], points2[middlePoint][1]);
+
+        var subchangeDirectionCurv = 0;
+        if (changeDirectionCurv == 1) {
+            subchangeDirectionCurv = 0;
+        } else {
+            subchangeDirectionCurv = 1;
+        }
+        SubmiddlePoint2 = ChageSubMiddilePoint(SubmiddlePoint2, subchangeDirectionCurv, LengthofSnake);
+        ctx.moveTo(points2[middlePoint][0], points2[middlePoint][1]);
+        ctx.quadraticCurveTo(points2[SubmiddlePoint2][0], points2[SubmiddlePoint2][1], points2[EndPoint][0], points2[EndPoint][1]);
+        ctx.stroke();
+        FillMidAndLastPointSnake(ctx, middlePoint, SnakeColor);
+        FillMidAndLastPointSnake(ctx, EndPoint, SnakeColor);
+        CreateFaceOfSnake(ctx, StartPoint, changeDirectionCurv, SnakeColor, SnakeEyeColor);
+    } else {
+
+        var middlePoint = (((EndPoint / 10) + (StartPoint / 10)) / 2).toFixed(0) + (((EndPoint % 10) + (StartPoint % 10)) / 2).toFixed(0);
+
+        middlePoint = ChageSubMiddilePoint(middlePoint, changeDirectionCurv, LengthofSnake);
+        ctx.moveTo(points2[StartPoint][0], points2[StartPoint][1]);
+        ctx.quadraticCurveTo(points2[middlePoint][0], points2[middlePoint][1], points2[EndPoint][0], points2[EndPoint][1]);
+        ctx.stroke();
+        FillMidAndLastPointSnake(ctx, EndPoint, SnakeColor);
+        CreateFaceOfSnake(ctx, StartPoint, changeDirectionCurv, SnakeColor, SnakeEyeColor);
+    }
+
+}
+function SnakeColorList() {
+    var sColor = ["#feeb4d", "#ff0821", "#ff1196", "#b200fc", "#4dff19", "#ff6781", "#01FEEF", "#FE7C01"];
+    return sColor[Math.floor(Math.random() * sColor.length)];
+}
+
+function LadderMake(ctx, StartPoint, EndPoint, LadderColor = "#000000") { // it will create ladder 
+    if(AddSnakeReDrawData==false){
+       LadderDataBase.push([Point1ConnectPoint2[StartPoint], Point1ConnectPoint2[EndPoint]]); // it will store position of ladder for redaraw canvas  
+       var Datass = [StartPoint,EndPoint,LadderColor];
+       LadderReDrawData.push(Datass);    
+    }
+    
+    var LengthofLadder = parseInt(((EndPoint / 10) - (StartPoint / 10)).toFixed(0));
+    var TotalLength = parseInt(LengthofLadder + 1);
+    var DivideLength = parseInt(TotalLength + 1);
+    var x = points2[StartPoint][0];
+    var y = points2[StartPoint][1];
+    var p0 = [x - (gap / 2), y - (gap / 2)];
+    var p1 = [x + (gap / 2), y - (gap / 2)];
+    var p2 = [x - (gap / 2), y + (gap / 2)];
+    var p3 = [x + (gap / 2), y + (gap / 2)];
+
+    var x = points2[EndPoint][0];
+    var y = points2[EndPoint][1];
+    var p01 = [x - (gap / 2), y - (gap / 2)];
+    var p11 = [x + (gap / 2), y - (gap / 2)];
+    var p21 = [x - (gap / 2), y + (gap / 2)];
+    var p31 = [x + (gap / 2), y + (gap / 2)];
+
+    var StartMidPoint1 = [p0[0], (p0[1] + p2[1]) / 2];
+    var StartMidPoint2 = [p1[0], (p1[1] + p3[1]) / 2];
+
+    var EndMidPoint1 = [p01[0], (p01[1] + p21[1]) / 2];
+    var EndMidPoint2 = [p11[0], (p11[1] + p31[1]) / 2];
+    
+    ctx.beginPath();
+    ctx.strokeStyle = LadderColor;
+    ctx.lineWidth = 4;
+    ctx.moveTo(StartMidPoint1[0], StartMidPoint1[1]);
+    ctx.lineTo(EndMidPoint1[0], EndMidPoint1[1]);
+
+    ctx.moveTo(StartMidPoint2[0], StartMidPoint2[1]);
+    ctx.lineTo(EndMidPoint2[0], EndMidPoint2[1]);
+    ctx.stroke();
+    ctx.beginPath();
+    var xx1 = EndMidPoint1[0] - StartMidPoint1[0];
+    var yy1 = EndMidPoint1[1] - StartMidPoint1[1];
+    var xx2 = EndMidPoint2[0] - StartMidPoint2[0];
+    var yy2 = EndMidPoint2[1] - StartMidPoint2[1];
+
+    for (var i = 1; i < DivideLength; i++) {
+        //ctx.strokeStyle ="#000000";
+        ctx.moveTo((StartMidPoint1[0] + (i * xx1) / DivideLength).toFixed(0), (StartMidPoint1[1] + (i * yy1) / DivideLength).toFixed(0));
+        ctx.lineTo((StartMidPoint2[0] + (i * xx2) / DivideLength).toFixed(0), (StartMidPoint2[1] + (i * yy2) / DivideLength).toFixed(0));
+    }
+    ctx.stroke();
+}
+function LadderColorList() {
+    var sColor = ["#D6E0CA","#a8a7a3"];
+    return sColor[Math.floor(Math.random() * sColor.length)];
+}
+
+function BackgroundColorList() {
+    var ColorBackground = [
+        ["#0A0A00", "#0E1A00", "#616f39", "#336600"],
+        ["#1D1C1C", "#0A0A00", "#011C39", "#023974"],
+        ["#0A0A00", "#1E1C01", "#393900", "#938200"],
+        ["#0A0A00", "#140010", "#23001C", "#5E024C"],
+        ["#0A0A00", "#150002", "#340105", "#6D040C"],
+        ["#0A0A00", "#1F0A01", "#481703", "#953007"],
+        ["#0A0A00", "#031818", "#011A1A", "#066A6A"]
+    ]
+    return ColorBackground[Math.floor(Math.random() * ColorBackground.length)];
+}
+
+function BackgroundColor(ctx, x, y, gap,ColorBackground) {
+    ctx.fillStyle = ColorBackground;
+    ctx.fillRect(x - (gap / 2), y - (gap / 2), gap, gap);
+    ctx.fill();
+}
+function CreateDotDice(){ 
+    ///This function should run before CreateDice()
+    sizeForDice = (gap/2);
+    Dicex = CanvasWidthForDice/2; 
+    Dicey = ((CanvasHeightForDice - (CanvasBorderForDice*(CanvasMultiForDice+1)))+CanvasHeightForDice)/2;
+    ActualDicex = Dicex-(sizeForDice/2);
+    ActualDicey = Dicey-(sizeForDice/2);
+    var xd;
+    var yd;
+    DicePointArray=[];
+    DicePointArray.push([ActualDicex+(sizeForDice/2),ActualDicey+(sizeForDice/2)]); // Middle 0
+    DicePointArray.push([DicePointArray[0][0],(ActualDicey+DicePointArray[0][1])/2]); //MiddleUp 1
+    DicePointArray.push([(ActualDicex+DicePointArray[1][0])/2,DicePointArray[1][1]]); // MiddleUp Left 2
+    DicePointArray.push([(ActualDicex+sizeForDice+DicePointArray[1][0])/2,DicePointArray[1][1]]); // MiddleUp Right 3
+    DicePointArray.push([DicePointArray[1][0],(ActualDicey+DicePointArray[0][1]+sizeForDice)/2]); // MiddleDown 4
+    DicePointArray.push([DicePointArray[2][0],DicePointArray[4][1]]); // MiddleDown Left 5
+    DicePointArray.push([DicePointArray[3][0],DicePointArray[4][1]]); // MiddleDown Right 6
+}        
+function DrawDotsDice(ctx,RandmDot){ // use for draw dots on dice
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#000";
+    ctx.fillStyle = "#000";
+    var RDArray = [];
+    if(RandmDot == 1){
+        RDArray.push(0);
+    }else if(RandmDot == 2){
+        RDArray.push(2);
+        RDArray.push(6);
+    }else if(RandmDot == 3){
+        RDArray.push(2);
+        RDArray.push(0);
+        RDArray.push(6);
+    }else if(RandmDot == 4){
+        RDArray.push(2);
+        RDArray.push(3);
+        RDArray.push(5);
+        RDArray.push(6);
+    }else if(RandmDot == 5){
+        RDArray.push(2);
+        RDArray.push(3);
+        RDArray.push(0);
+        RDArray.push(5);
+        RDArray.push(6);
+    }else if(RandmDot == 6){
+        RDArray.push(1);
+        RDArray.push(2);
+        RDArray.push(3);
+        RDArray.push(4);
+        RDArray.push(5);
+        RDArray.push(6);
+    }
+    
+    for(var i =0;i<RDArray.length;i++){
+        ctx.beginPath();
+        ctx.arc(DicePointArray[RDArray[i]][0], DicePointArray[RDArray[i]][1], 2, 0, 2 * Math.PI, false);
+        ctx.fill();
+        ctx.stroke();
+    }
+    //console.log("Random "+RandmDot);
+    
+    
+}          
+function CreateDice(ctx,ColorDDice,RandmDot){
+    ctx.beginPath();
+    
+    ctx.fillStyle = "#000";
+    ctx.fillRect(ActualDicex-2.5,ActualDicey-2.5,sizeForDice+5,sizeForDice+5);
+    ctx.fill();
+    ctx.fillStyle = ColorDDice;
+    ctx.fillRect(ActualDicex,ActualDicey,sizeForDice,sizeForDice);
+    ctx.fill();
+    
+    ctx.stroke();
+    DrawDotsDice(ctx,RandmDot);
+}
+          
+function checkPlayerOnSankeLadderor100(playerPPosition){
+    for(var i=0;i<SnakeDataBase.length;i++){
+        if (SnakeDataBase[i][0]==playerPPosition){
+            playerPPosition = SnakeDataBase[i][1];
+        }
+    }
+    for(var i=0;i<LadderDataBase.length;i++){
+        if (LadderDataBase[i][1]==playerPPosition){
+            playerPPosition = LadderDataBase[i][0];
+        }
+    }
+    
+    return playerPPosition;
+}          
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function UpdateDice(ctx){
+    ctx.beginPath();
+    var iterationLast = 10;
+    for(var i=0;i<iterationLast;i++){ // this for loop is for animation dice - color change 
+        var ColorDDice = SnakeColorList();
+        if((iterationLast-1) == i){
+            ColorDDice = "#fff";
+        }
+        RandomDice = Math.floor(Math.random() * 6)+1;
+        CreateDice(ctx,ColorDDice,RandomDice);
+        await sleep(100);
+    }
+    
+    ctx.stroke();
+    UpdatePlayerStep(ctx,PlayerEnable,RandomDice); 
+    
+    ////////////////////////////////////////////////***************
+    if(RandomDice!=6){
+        if(PlayerEnable=="1"){
+           PlayerEnable = "2";
+           CreateTextPlayerturn(ctx,"Player 2 turn");
+        }else{
+           PlayerEnable = "1";
+           CreateTextPlayerturn(ctx,"Player 1 turn");
+        }
+    }
+    /////////////////////////////////////////////******************
+    
+    TouchEnable = false;   
+} 
+async function UpdatePlayerStep(ctx,PlayerEnableNumber,RandomDice){
+// this function is use for check every step of player 
+    if(PlayerEnableNumber == "1"){
+       if(Player1positionNumber+RandomDice<100){
+          for(var i = 0; i<RandomDice ;i++){
+            Player1positionNumber++;
+            ReDrawCanvas(ctx);
+            await sleep(100);
+          }
+        }
+        
+        Player1positionNumber = checkPlayerOnSankeLadderor100(Player1positionNumber); // it will check player is on ladder or on snake 
+        if(Player1positionNumber == 99){
+            if(PlayerEnableNumber == PlayerEnable){
+                CreateTextPlayerturn(ctx,"You Win");
+            }else{
+               CreateTextPlayerturn(ctx,"Enemy Win"); 
+            }
+            for(var i = 0;i<20;i++){
+                BackgroundReDrawData[0] = SnakeColorList();
+                ReDrawCanvas(ctx);
+                await sleep(100);
+            }
+            
+        }
+    }else{
+        if(Player2positionNumber+RandomDice<100){
+          for(var i = 0; i<RandomDice ;i++){
+            Player2positionNumber++;
+            ReDrawCanvas(ctx);
+            await sleep(100);
+          }
+        }
+        Player2positionNumber = checkPlayerOnSankeLadderor100(Player2positionNumber);
+        if(Player2positionNumber == 99){
+            if(PlayerEnableNumber == PlayerEnable){
+                CreateTextPlayerturn(ctx,"You Win");
+            }else{
+               CreateTextPlayerturn(ctx,"Enemy Win"); 
+            }
+            for(var i = 0;i<20;i++){
+                BackgroundReDrawData[0] = SnakeColorList();
+                ReDrawCanvas(ctx);
+                await sleep(100);
+            }
+            
+        }
+        
+    }
+    ReDrawCanvas(ctx); 
+   
+}                   
+function CreateTextPlayerturn(ctx,PlayerNumber){
+    ctx.beginPath();
+    TextPlayerturnx = ((Dicex+CanvasWidthForDice-CanvasBorderForDice)/2)-20;
+    TextPlayerturny = Dicey;
+    ctx.fillStyle = BackgroundBorderColor;
+    ctx.fillRect(TextPlayerturnx-25,TextPlayerturny-15,200,30);
+    ctx.fill();
+    ctx.font = "15px Georgia"
+    ctx.fillStyle = "#fff";
+    ctx.fillText(PlayerNumber,TextPlayerturnx,TextPlayerturny);
+    ctx.fill();
+    ctx.stroke();
+}
+function DrawLine(ctx,points,numberOfgaps){
+    ctx.strokeStyle = "grey";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    var i = 0;
+    for (var j = 0; j <= numberOfgaps; j++) {
+         ctx.moveTo(points[i + j * (numberOfgaps + 1)][0], points[i + j * (numberOfgaps + 1)][1]);
+         for (i = 1; i <= numberOfgaps; i++) {
+            ctx.lineTo(points[i + j * (numberOfgaps + 1)][0], points[i + j * (numberOfgaps + 1)][1]);
+         }
+         i = 0;
+    }
+    var i = 0;
+    for (var j = 0; j <= numberOfgaps; j++) {
+        ctx.moveTo(points[i * (numberOfgaps + 1) + j][0], points[i * (numberOfgaps + 1) + j][1]);
+        for (i = 1; i <= numberOfgaps; i++) {
+            ctx.lineTo(points[i * (numberOfgaps + 1) + j][0], points[i * (numberOfgaps + 1) + j][1]);
+        }
+        i = 0;
+    }   
+    ctx.stroke();
+}
+function BordText100(ctx){
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "11px Georgia";
+    for (i = 0; i < points1.length; i++) {
+          ctx.fillText(i+1,points1[i][0]-2,points1[i][1]);
+          //ctx.fillText(i, points2[i][0] - 3, points2[i][1] - 2);
+    } 
+}
+function TouchOnDice(myCanvas,ctx){
+    var canvasLeft = myCanvas.offsetLeft;
+    var canvasTop = myCanvas.offsetTop;
+    myCanvas.addEventListener("click", function (e) {
+        var x = e.pageX - canvasLeft;
+        var y = e.pageY- canvasTop; 
+        ////////////Dice Touch//////////////
+        var StartDicex = ActualDicex-1;
+        var StartDicey = ActualDicey-1;
+        var EndDicex= StartDicex + sizeForDice+2 ;
+        var EndDicey = StartDicey + sizeForDice +2;
+        if(x>StartDicex && x<EndDicex && TouchEnable==false){ // when user click on dice area 
+            if(y>StartDicey&&y<EndDicey){
+                TouchEnable = true;
+                UpdateDice(ctx);
+                //console.log({x, y});
+                
+            }
+        } 
+    });
+}
+function ReturnFourPoint(PlayerpositionNumber){
+    var x = points1[PlayerpositionNumber][0];
+    var y =points1[PlayerpositionNumber][1];
+    var p0 = [x-(gap/2),y-(gap/2)]; 
+    var p1 = [x+(gap/2),y-(gap/2)]; 
+    var p2 = [x-(gap/2),y+(gap/2)]; 
+    var p3 = [x+(gap/2),y+(gap/2)]; 
+    var Ppoint =[p0,p1,p2,p3];
+    return Ppoint;
+}
+          
+function CreatePlayer(ctx,PlayerpositionNumber,playerNumber,playersize,playerColor){
+    var playerxy = [];
+    if(playerNumber == 1) // Player1
+    {
+       var Ppoint = ReturnFourPoint(PlayerpositionNumber);
+       playerxy = [Ppoint[0][0],Ppoint[0][1]];        
+    }
+    else // Player2
+    {
+        var Ppoint = ReturnFourPoint(PlayerpositionNumber);
+        playerxy = [Ppoint[3][0]-(2*(playersize+1)),Ppoint[3][1]-(2*(playersize+1))];
+    }
+    
+    ctx.beginPath();
+    ctx.arc(playerxy[0]+(playersize+1),playerxy[1]+(playersize+1), playersize, 0, 2 * Math.PI, false);
+    ctx.strokeStyle =LadderColorList();//SnakeColorList(); //"#fff";
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    var sizeMinus = 0;
+    ctx.fillStyle = playerColor;
+    ctx.arc(playerxy[0]+(playersize+1),playerxy[1]+(playersize+1), playersize-sizeMinus, 0, 2 * Math.PI, false);
+    ctx.fill();
+    ctx.stroke();
+}
+          
+function Map1(ctx) {
+    SnakeMake(ctx, 34, 95, 0, SnakeColorList());
+    SnakeMake(ctx, 2, 43, 0, SnakeColorList());
+    SnakeMake(ctx, 37, 99, 0, SnakeColorList());
+    SnakeMake(ctx, 67, 96, 1, SnakeColorList());
+    SnakeMake(ctx, 11, 91, 1, SnakeColorList());
+    SnakeMake(ctx, 7, 49, 0, SnakeColorList());
+    SnakeMake(ctx, 17, 93, 1, SnakeColorList());    
+    SnakeMake(ctx, 60, 80, 0, SnakeColorList());
+    SnakeMake(ctx, 3, 23, 1, SnakeColorList());
+    SnakeMake(ctx, 54, 74, 1, SnakeColorList());
+    SnakeMake(ctx, 32, 52, 1, SnakeColorList());
+    LadderMake(ctx, 12, 31, LadderColorList());
+    LadderMake(ctx, 53, 81, LadderColorList());
+    LadderMake(ctx, 73, 92, LadderColorList());
+    LadderMake(ctx, 9, 57, LadderColorList());
+    LadderMake(ctx, 4, 25, LadderColorList());
+}
+function Map2(ctx) {
+    SnakeMake(ctx, 53, 96, 0, SnakeColorList());
+    SnakeMake(ctx, 2, 40, 0, SnakeColorList());
+    SnakeMake(ctx, 79, 99, 1, SnakeColorList());
+    SnakeMake(ctx, 74, 93, 1, SnakeColorList());
+    SnakeMake(ctx, 9, 57, 1, SnakeColorList());
+    SnakeMake(ctx, 13, 54, 0, SnakeColorList());
+    SnakeMake(ctx, 7, 97, 1, SnakeColorList());    
+    SnakeMake(ctx, 41, 80, 0, SnakeColorList());
+    SnakeMake(ctx, 11, 31, 0, SnakeColorList());
+    SnakeMake(ctx, 45, 65, 0, SnakeColorList());
+    SnakeMake(ctx, 30, 50, 0, SnakeColorList());
+    LadderMake(ctx, 63,91, LadderColorList());
+    LadderMake(ctx, 33, 70, LadderColorList());
+    LadderMake(ctx, 66, 98, LadderColorList());
+    LadderMake(ctx, 27, 59, LadderColorList());
+    LadderMake(ctx, 4, 35, LadderColorList());
+}
+function Map3(ctx) {
+    SnakeMake(ctx, 6, 99, 0, SnakeColorList());
+    SnakeMake(ctx, 9, 96, 1, SnakeColorList());
+    SnakeMake(ctx, 21, 62, 0, SnakeColorList());
+    SnakeMake(ctx, 53, 92, 1, SnakeColorList());
+    SnakeMake(ctx, 2, 23, 0, SnakeColorList());
+    SnakeMake(ctx, 46, 87, 1, SnakeColorList());
+    SnakeMake(ctx, 71, 91, 1, SnakeColorList());    
+    SnakeMake(ctx, 24, 54, 1, SnakeColorList());
+    SnakeMake(ctx, 10, 30, 0, SnakeColorList());
+    SnakeMake(ctx, 72, 92, 1, SnakeColorList());
+    SnakeMake(ctx, 39, 59, 1, SnakeColorList());
+    LadderMake(ctx, 14,76, LadderColorList());
+    LadderMake(ctx, 63, 95, LadderColorList());
+    LadderMake(ctx, 31, 60, LadderColorList());
+    LadderMake(ctx, 5, 47, LadderColorList());
+    LadderMake(ctx, 1, 33, LadderColorList());
+}  
+function Map4(ctx) {
+    SnakeMake(ctx, 11, 96, 0, SnakeColorList());
+    SnakeMake(ctx, 7, 63, 0, SnakeColorList());
+    SnakeMake(ctx, 30, 71, 0, SnakeColorList());
+    SnakeMake(ctx, 58, 97, 1, SnakeColorList());
+    SnakeMake(ctx, 14, 67, 0, SnakeColorList());
+    SnakeMake(ctx, 2, 13, 1, SnakeColorList());
+    SnakeMake(ctx, 73, 92, 1, SnakeColorList()); 
+    SnakeMake(ctx, 3, 23, 0, SnakeColorList());
+    SnakeMake(ctx, 33, 53, 1, SnakeColorList());
+    SnakeMake(ctx, 39, 59, 1, SnakeColorList());
+    SnakeMake(ctx, 64, 84, 0, SnakeColorList());
+    LadderMake(ctx, 10,42, LadderColorList());
+    LadderMake(ctx, 9, 47, LadderColorList());
+    LadderMake(ctx, 62, 91, LadderColorList());
+    LadderMake(ctx, 55, 87, LadderColorList());
+    LadderMake(ctx, 4, 26, LadderColorList());
+}
+function Map5(ctx) {
+    SnakeMake(ctx, 14, 99, 0, SnakeColorList());
+    SnakeMake(ctx, 16, 91, 1, SnakeColorList());
+    SnakeMake(ctx, 75, 95, 0, SnakeColorList());
+    SnakeMake(ctx, 23, 78, 0, SnakeColorList());
+    SnakeMake(ctx, 33, 71, 0, SnakeColorList());
+    SnakeMake(ctx, 2, 31, 1, SnakeColorList());
+    SnakeMake(ctx, 72, 93, 0, SnakeColorList());  
+    SnakeMake(ctx, 6, 26, 0, SnakeColorList());
+    SnakeMake(ctx, 60, 80, 0, SnakeColorList());
+    LadderMake(ctx, 7,49, LadderColorList());
+    LadderMake(ctx, 59, 88, LadderColorList());
+    LadderMake(ctx, 30, 62, LadderColorList());
+    LadderMake(ctx, 4, 21, LadderColorList());
+    LadderMake(ctx, 55, 97, LadderColorList());
+}    
+function Map6(ctx) {
+    SnakeMake(ctx, 1, 99, 0, SnakeColorList());
+    SnakeMake(ctx, 27, 72, 1, SnakeColorList());
+    SnakeMake(ctx, 61, 93, 0, SnakeColorList());
+    SnakeMake(ctx, 74, 94, 0, SnakeColorList());
+    SnakeMake(ctx, 4, 41, 0, SnakeColorList());
+    SnakeMake(ctx, 58, 95, 1, SnakeColorList());
+    SnakeMake(ctx, 6, 26, 0, SnakeColorList());  
+    SnakeMake(ctx, 30, 51, 0, SnakeColorList());
+    SnakeMake(ctx, 5, 25, 1, SnakeColorList());
+    LadderMake(ctx, 9,85, LadderColorList());
+    LadderMake(ctx, 59, 88, LadderColorList());
+    LadderMake(ctx, 11, 63, LadderColorList());
+    LadderMake(ctx, 2, 24, LadderColorList());
+    LadderMake(ctx, 60, 92, LadderColorList());
+}
+function Map7(ctx) {
+    SnakeMake(ctx, 33, 99, 0, SnakeColorList());
+    SnakeMake(ctx, 35, 88, 0, SnakeColorList());
+    SnakeMake(ctx, 2, 22, 0, SnakeColorList());
+    SnakeMake(ctx, 63, 94, 0, SnakeColorList());
+    SnakeMake(ctx, 42, 71, 0, SnakeColorList());
+    SnakeMake(ctx, 6, 59, 0, SnakeColorList());
+    SnakeMake(ctx, 41, 92, 0, SnakeColorList());   
+    SnakeMake(ctx, 13, 34, 0, SnakeColorList());
+    SnakeMake(ctx, 1, 31, 0, SnakeColorList());
+    SnakeMake(ctx, 70, 91, 0, SnakeColorList());
+    LadderMake(ctx, 10,65, LadderColorList());
+    LadderMake(ctx, 68, 93, LadderColorList());
+    LadderMake(ctx, 9, 56, LadderColorList());
+    LadderMake(ctx, 4, 26, LadderColorList());
+    LadderMake(ctx, 79, 97, LadderColorList());
+}
+function Map8(ctx) {
+    SnakeMake(ctx, 14, 99, 0, SnakeColorList());
+    SnakeMake(ctx, 9, 91, 1, SnakeColorList());
+    SnakeMake(ctx, 63, 83, 0, SnakeColorList());
+    SnakeMake(ctx, 6, 26, 0, SnakeColorList());
+    SnakeMake(ctx, 23, 61, 1, SnakeColorList());
+    SnakeMake(ctx, 1, 21, 1, SnakeColorList());
+    SnakeMake(ctx, 34, 97, 0, SnakeColorList());  
+    SnakeMake(ctx, 10, 30, 0, SnakeColorList());
+    SnakeMake(ctx, 70, 91, 0, SnakeColorList());
+    SnakeMake(ctx, 77, 98, 0, SnakeColorList());
+    LadderMake(ctx, 43,95, LadderColorList());
+    LadderMake(ctx, 28, 89, LadderColorList());
+    LadderMake(ctx, 40, 82, LadderColorList());
+    LadderMake(ctx, 3, 31, LadderColorList());
+}
+function Map9(ctx) {
+    SnakeMake(ctx, 14, 97, 0, SnakeColorList());
+    SnakeMake(ctx, 12, 95, 0, SnakeColorList());
+    SnakeMake(ctx, 16, 99, 0, SnakeColorList());
+    SnakeMake(ctx, 72, 92, 0, SnakeColorList());
+    SnakeMake(ctx, 1, 11, 0, SnakeColorList());
+    SnakeMake(ctx, 33, 60, 1, SnakeColorList());
+    SnakeMake(ctx, 71, 91, 0, SnakeColorList());  
+    SnakeMake(ctx, 5, 24, 0, SnakeColorList());
+    SnakeMake(ctx, 29, 49, 1, SnakeColorList());
+    SnakeMake(ctx, 43, 63, 1, SnakeColorList());
+    LadderMake(ctx, 55,93, LadderColorList());
+    LadderMake(ctx, 21, 62, LadderColorList());
+    LadderMake(ctx, 36, 69, LadderColorList());
+    LadderMake(ctx, 8, 26, LadderColorList());
+    LadderMake(ctx, 67, 98, LadderColorList());
+}
+function Map10(ctx) {
+    SnakeMake(ctx, 11, 94, 0, SnakeColorList());
+    SnakeMake(ctx, 14, 91, 1, SnakeColorList());
+    SnakeMake(ctx, 15, 98, 0, SnakeColorList());
+    SnakeMake(ctx, 18, 95, 1, SnakeColorList());
+    SnakeMake(ctx, 55, 75, 0, SnakeColorList());
+    SnakeMake(ctx, 58, 78, 1, SnakeColorList());   
+    SnakeMake(ctx, 1, 20, 1, SnakeColorList());
+    SnakeMake(ctx, 5, 25, 0, SnakeColorList());
+    SnakeMake(ctx, 45, 66, 0, SnakeColorList());
+    SnakeMake(ctx, 76, 96, 0, SnakeColorList());
+    SnakeMake(ctx, 35, 54, 1, SnakeColorList());
+    LadderMake(ctx, 21,72, LadderColorList());
+    LadderMake(ctx, 50,81, LadderColorList());
+    LadderMake(ctx, 69,88, LadderColorList());
+    LadderMake(ctx, 2, 34, LadderColorList());
+    LadderMake(ctx, 7, 36, LadderColorList());
+    LadderMake(ctx, 64, 85, LadderColorList());
+    LadderMake(ctx, 19, 48, LadderColorList());
+}
+function Map11(ctx) {
+    SnakeMake(ctx, 15, 78, 0, SnakeColorList());
+    SnakeMake(ctx, 33, 95, 0, SnakeColorList());
+    SnakeMake(ctx, 31, 92, 0, SnakeColorList());
+    SnakeMake(ctx, 18, 65, 1, SnakeColorList());
+    SnakeMake(ctx, 2, 22, 0, SnakeColorList());
+    SnakeMake(ctx, 4, 34, 1, SnakeColorList());
+    SnakeMake(ctx, 79, 99, 1, SnakeColorList());
+    SnakeMake(ctx, 8, 28, 0, SnakeColorList());
+    SnakeMake(ctx, 43, 63, 1, SnakeColorList());
+    SnakeMake(ctx, 73, 91, 1, SnakeColorList());
+    SnakeMake(ctx, 10, 30, 0, SnakeColorList());
+    SnakeMake(ctx, 60, 80, 0, SnakeColorList());
+    LadderMake(ctx, 40,72, LadderColorList());
+    LadderMake(ctx, 39, 86, LadderColorList());
+    LadderMake(ctx, 17, 45, LadderColorList());
+    LadderMake(ctx, 1, 32, LadderColorList());
+    LadderMake(ctx, 75, 93, LadderColorList());
+}
+function Map12(ctx) {
+    SnakeMake(ctx, 44, 97, 0, SnakeColorList());
+    SnakeMake(ctx, 4, 47, 0, SnakeColorList());
+    SnakeMake(ctx, 12, 52, 1, SnakeColorList());
+    SnakeMake(ctx, 53, 93, 0, SnakeColorList());
+    SnakeMake(ctx, 17, 78, 0, SnakeColorList());
+    SnakeMake(ctx, 74, 94, 1, SnakeColorList());
+    SnakeMake(ctx, 51, 71, 1, SnakeColorList());   
+    SnakeMake(ctx, 1, 22, 0, SnakeColorList());
+    SnakeMake(ctx, 6, 26, 0, SnakeColorList());
+    SnakeMake(ctx, 35, 77, 0, SnakeColorList());
+    LadderMake(ctx, 3,34, LadderColorList());
+    LadderMake(ctx, 10, 41, LadderColorList());
+    LadderMake(ctx, 69, 98, LadderColorList());
+    LadderMake(ctx, 9, 37, LadderColorList());
+    LadderMake(ctx, 54, 96, LadderColorList());
+}
+function Map13(ctx) {
+    SnakeMake(ctx, 42, 92, 0, SnakeColorList());
+    SnakeMake(ctx, 41, 91, 1, SnakeColorList());
+    SnakeMake(ctx, 35, 95, 1, SnakeColorList());
+    SnakeMake(ctx, 17, 57, 0, SnakeColorList());
+    SnakeMake(ctx, 58, 98, 0, SnakeColorList());
+    SnakeMake(ctx, 3, 23, 1, SnakeColorList());
+    SnakeMake(ctx, 11, 40, 0, SnakeColorList());  
+    SnakeMake(ctx, 7, 27, 0, SnakeColorList());
+    SnakeMake(ctx, 2, 22, 0, SnakeColorList());
+    SnakeMake(ctx, 59, 69, 1, SnakeColorList());
+    SnakeMake(ctx, 79, 99, 1, SnakeColorList());
+    SnakeMake(ctx, 45, 65, 0, SnakeColorList());
+    SnakeMake(ctx, 37, 56, 0, SnakeColorList());
+    LadderMake(ctx, 5,36, LadderColorList());
+    LadderMake(ctx, 66, 97, LadderColorList());
+    LadderMake(ctx, 63, 94, LadderColorList());
+    LadderMake(ctx, 24, 53, LadderColorList());
+    LadderMake(ctx, 8, 39, LadderColorList());
+} 
+function Map14(ctx) {
+    SnakeMake(ctx, 17, 92, 1, SnakeColorList());
+    SnakeMake(ctx, 38, 95, 1, SnakeColorList());
+    SnakeMake(ctx, 15, 61, 1, SnakeColorList());
+    SnakeMake(ctx, 12, 63, 0, SnakeColorList());
+    SnakeMake(ctx, 71, 91, 0, SnakeColorList());
+    SnakeMake(ctx, 8, 28, 1, SnakeColorList());
+    SnakeMake(ctx, 1, 21, 0, SnakeColorList()); 
+    SnakeMake(ctx, 6, 25, 0, SnakeColorList());
+    SnakeMake(ctx, 50, 70, 0, SnakeColorList());
+    SnakeMake(ctx, 78, 98, 0, SnakeColorList());
+    LadderMake(ctx, 30,62, LadderColorList());
+    LadderMake(ctx, 36, 68, LadderColorList());
+    LadderMake(ctx, 44, 97, LadderColorList());
+    LadderMake(ctx, 3, 34, LadderColorList());
+    LadderMake(ctx, 73, 94, LadderColorList());
+}
+function Map15(ctx) {
+    SnakeMake(ctx, 14, 94, 0, SnakeColorList());
+    SnakeMake(ctx, 76, 96, 0, SnakeColorList());
+    SnakeMake(ctx, 2, 82, 1, SnakeColorList());
+    SnakeMake(ctx, 7, 87, 1, SnakeColorList());
+    SnakeMake(ctx, 65, 85, 1, SnakeColorList());
+    SnakeMake(ctx, 51, 71, 0, SnakeColorList());
+    SnakeMake(ctx, 1, 20, 0, SnakeColorList());
+    SnakeMake(ctx, 38, 58, 0, SnakeColorList());
+    SnakeMake(ctx, 60, 81, 0, SnakeColorList());
+    SnakeMake(ctx, 45, 66, 0, SnakeColorList());
+    LadderMake(ctx, 18,56, LadderColorList());
+    LadderMake(ctx, 13, 40, LadderColorList());
+    LadderMake(ctx, 34, 92, LadderColorList());
+    LadderMake(ctx, 4, 26, LadderColorList());
+    LadderMake(ctx, 59, 97, LadderColorList());
+}
+function TakeRandomMap(ctx,FixMap = -1){ // FixMap can use in multiplayer for second player fix map
+    AddSnakeReDrawData = false;//important for reDrawCanvas
+    if(FixMap == -1){
+        var xx = Math.floor(Math.random() * 15)+1;
+    }else{
+        var xx = FixMap;
+    }
+    
+    switch(xx) {
+        case 1:
+            Map1(ctx);
+            break;
+        case 2:
+            Map2(ctx);
+            break;
+        case 3:
+            Map3(ctx);
+            break;
+        case 4:
+            Map4(ctx);
+            break;
+        case 5:
+            Map5(ctx);
+            break;
+        case 6:
+            Map6(ctx);
+            break;
+        case 7:
+            Map7(ctx);
+            break;
+        case 8:
+            Map8(ctx);
+            break;
+        case 9:
+            Map9(ctx);
+            break;
+        case 10:
+            Map10(ctx);
+            break;
+        case 11:
+            Map11(ctx);
+            break;
+        case 12:
+            Map12(ctx);
+            break;
+        case 13:
+            Map13(ctx);
+            break;
+        case 14:
+            Map14(ctx);
+            break;
+        case 15:
+            Map15(ctx);
+            break;
+        default:
+            Map1(ctx);
+            console.log("Error Map");     
+    }
+    console.log("Map "+xx);
+    AddSnakeReDrawData = true;//important for reDrawCanvas
+}          
+function ReDrawCanvas(ctx){ // it is use for redraw canvas 
+    ctx.beginPath();
+    for(var i=0;i<BackgroundReDrawData.length;i++){
+        //console.log(i+"  "+points2[i]+" e "+BackgroundReDrawData[i]);
+        BackgroundColor(ctx,points2[i][0],points2[i][1],gap,BackgroundReDrawData[i]);
+    }
+    DrawLine(ctx,points,numberOfgaps);
+    BordText100(ctx);
+    for(var i =0;i<SnakeReDrawData.length;i++){
+        SnakeMake(ctx,SnakeReDrawData[i][0],SnakeReDrawData[i][1],SnakeReDrawData[i][2],SnakeReDrawData[i][3]);
+    }
+    for(var i=0;i<LadderReDrawData.length;i++){
+        LadderMake(ctx,LadderReDrawData[i][0],LadderReDrawData[i][1],LadderReDrawData[i][2]);
+    }
+    ////////////////////////Player 1 ///////
+    CreatePlayer(ctx,Player1positionNumber,1,PlayerSize,Player1Color);
+    ////////////////////
+    ////////////////////////Player 2 ///////
+    CreatePlayer(ctx,Player2positionNumber,2,PlayerSize,Player2Color);
+    ////////////////////
+    ctx.stroke();
+}
+          
+var FixBackgroungColor = BackgroundColorList();
+var BackgroundBorderColor = "#333432";          
+var SnakeDataBase = [];
+var LadderDataBase = [];
+var Point1ConnectPoint2 = []; 
+var points2 = [];
+var points1= [];          
+var numberOfgaps = null;          
+var points = [];          
+var gap = null;
+var CanvasHeightForDice=null;
+var CanvasWidthForDice=null;
+var CanvasBorderForDice=null;
+var CanvasMultiForDice=null; 
+var sizeForDice=null;   
+var Dicex=null;  
+var Dicey=null;        
+var TextPlayerturnx= null;
+var TextPlayerturny = null;
+var TouchEnable = false;
+var RandomDice = null;
+var AddSnakeReDrawData = false;          
+var SnakeReDrawData = [];
+var LadderReDrawData =[];
+var BackgroundReDrawData=new Array(100);    //use point2       
+var ActualDicex = null;
+var ActualDicey = null;         
+var DicePointArray=[];
+var PlayerEnable = "2";          
+var Player1positionNumber =null;
+var Player1Color = "#F30000";          
+var PlayerSize = 10; 
+var Player2positionNumber = null;
+var Player2Color = "#000CFE" ;          
+
+function SubMain(myCanvas,ctx,FixMap){
+            //// for select random map
+            TakeRandomMap(ctx,FixMap);
+            ////////////////////////////////////////////////////////////
+            // touch on dice
+            TouchOnDice(myCanvas,ctx);
+            ///////////////////////////////////////////////////
+            //////////////////////Player1////////////
+            Player1positionNumber = 0;
+            CreatePlayer(ctx,Player1positionNumber,1,PlayerSize,Player1Color);        
+            /////////////////////////////////////////////////
+            //////////////////////Player2//////////
+            Player2positionNumber = 0;
+            CreatePlayer(ctx,Player2positionNumber,2,PlayerSize,Player2Color);
+            ////////////////////////////////////////////////////
+    
+}          
+function MainFunction() { // start for here
+    var myCanvas = document.getElementById("game-canvas");
+    if (myCanvas && myCanvas.getContext) {
+        numberOfgaps = 10;
+        var borderWidth = 20;
+        CanvasMultiForDice = 2;
+        myCanvas.width = 440 + borderWidth * 2;
+        myCanvas.height = 440 + (borderWidth*CanvasMultiForDice) * 2;
+        CanvasHeightForDice = myCanvas.height;
+        CanvasWidthForDice = myCanvas.width;
+        CanvasBorderForDice = borderWidth;
+        var ctx = myCanvas.getContext("2d");
+        ctx.fillStyle =BackgroundBorderColor;
+        ctx.fillRect(0,0,myCanvas.width,myCanvas.height);
+        ctx.fill();
+        if (ctx) {
+            ctx.fillStyle = "grey"; 
+            ctx.strokeStyle = "grey"; 
+            ctx.lineWidth = 2;
+            gap = (myCanvas.width - 2 * borderWidth) / numberOfgaps;
+            points = []; 
+            var x = y = borderWidth;
+            for (var i = 0; i <= numberOfgaps; i++) {
+                for (var j = 0; j <= numberOfgaps; j++) {
+                    points.push([x, y]);
+                    x = x + gap;
+                }
+                y = y + gap;
+                x = 20;
+            }
+            for (i = 0; i < points.length; i++) {
+                ctx.fillRect(points[i][0] - 2, points[i][1] - 2, 4, 4); 
+            }
+            var x = y = borderWidth + (gap / 2);
+            var tempAdd =0;
+            var tempColor;
+            ///////It will create mid point of every square
+            /*
+                it will store background color in BackgroundReDrawData[] database
+                points2 is  
+                0 1 2 3 ... 8 9
+                10 11  12 ... 18 19
+                .
+                .
+                90 91 92 ... 98 99
+            */
+            for (var i = 0; i <= numberOfgaps - 1; i++) {
+                for (var j = 0; j <= numberOfgaps - 1; j++) {
+                    points2.push([x, y]);
+                    tempColor = FixBackgroungColor[Math.floor(Math.random() * 4)];
+                    BackgroundReDrawData[tempAdd++] =tempColor;
+                    BackgroundColor(ctx, x, y, gap,tempColor);
+                    x = x + gap;
+                }
+                y = y + gap;
+                x = borderWidth + (gap / 2);
+            }
+            /////////////////////////////////////////////////////////////////
+            ////////////////// This is BackgroundBord Point and number For snake bord
+            /*
+                points1 is 
+                100  99 98  ... 93 92 91
+                81   82 83 .... 88 89 90
+                80   79 78 ...  73 72 71
+                .
+                .
+                1    2   3  ...  8  9  10 
+            */
+            
+            points1 = new Array(100);
+            var countTen = 0;
+            var decreaseincrease = 0; //0- decrese  1-increase
+            var LastvalueEnter = 100;
+            var valueEnter = 100;
+            for (var i = 0; i <= points2.length; i++) {
+                if (countTen > 9) {
+                    countTen = 0;
+                    if (decreaseincrease == 1) {
+                        decreaseincrease = 0;
+                        valueEnter = LastvalueEnter + 1;
+                        LastvalueEnter = LastvalueEnter + 1;
+                    } else {
+                        decreaseincrease = 1;
+                        valueEnter = LastvalueEnter - 21;
+                        LastvalueEnter = LastvalueEnter - 21;
+                    }
+                }
+                if (decreaseincrease == 0) {
+                    valueEnter--;
+                    points1[valueEnter] = points2[i];
+                    Point1ConnectPoint2[i] = valueEnter;
+                    countTen++;
+                } else if (decreaseincrease == 1) {
+                    valueEnter++;
+                    points1[valueEnter] = points2[i];
+                    Point1ConnectPoint2[i] = valueEnter;
+                    countTen++;
+                }
+            }
+            BordText100(ctx); // it will use for draw point on snake bord 
+            ///////////////////////////////////////////////////////////
+
+            ////////////////Drawing grid lines
+            DrawLine(ctx,points,numberOfgaps);
+            ///////////////////////////////////////////////////////////////
+            
+            /////create dice
+            CreateDotDice();
+            CreateDice(ctx,"#fff",Math.floor(Math.random() * 6)+1);
+            ///////////////////////////////////////////////////////////////////
+            //// it is use for draw text which player turn is it is right side of dice
+            CreateTextPlayerturn(ctx,"Player "+PlayerEnable+" turn");
+            ///////////////////////////////////////////////////////////////
+            SubMain(myCanvas,ctx,-1); // FixMap 
+            
+            
+            
+            
+        }
+    }
+}
+MainFunction();
+      })();
+
+    </script>
+  </body>
+</html>
